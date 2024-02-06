@@ -4,8 +4,6 @@ const express=require('express');
 
 const bodyparser=require('body-parser');
 const cors = require('cors')
-const DateModel= require('./models/datemodel')
-const AttendanceModel = require('./models/attendancemodel')
 
 
 const rootDir=require('./util/path');
@@ -16,22 +14,30 @@ const sequelize=require('./util/database');
 
 const app=express();
 
-const AttendaceRoute=require('./routes/attendanceroute');
+const ReviewRoute=require('./routes/reviewroute');
+
 
 
 app.use(bodyparser.json());
 
 app.use(bodyparser.urlencoded({ extended: false }));
-//app.use(express.static(path.join(rootDir, 'public')));
+app.use(express.static(path.join(rootDir, 'public')));
 
-app.use(AttendaceRoute);
+app.use('/reviews',ReviewRoute);
 
-app.use(cors())
+app.use(cors());
 
-sequelize.sync()
+
+sequelize
+.sync()
+//.sync({force:true})
 .then(result=>{
-
-    app.listen(3004);
-    
+   console.log('database synced successfully');
 })
+
+
+.then(result=>{
+    app.listen(3004);
+})
+
 .catch(err=>console.log(err))
